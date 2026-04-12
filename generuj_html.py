@@ -18,8 +18,7 @@ from analyza_korelacie import korelacie_parametrov, suhrne_statistiky
 
 # Fyzikálne medze – rovnaké ako v analyza_chyb.py
 FYZIKALNE_MEDZE = {
-    'Irradiance':               (-5,   1500),
-    'IrradianceNotCompensated': (-5,   1500),
+    'Irradiance':               (0,    1500),
     'BodyTemperature':          (-40,  80),
     'RelativeHumidity':         (0,    100),
     'HumidityTemp':             (-40,  60),

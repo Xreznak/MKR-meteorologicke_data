@@ -24,7 +24,7 @@ from generuj_html      import generuj_html_report                   # Generovani
 # ==============================================================
 
 CSV    = 'meteo_data/train/meteo_data_raw.csv'   # Vstupný súbor s meteorologickými dátami
-OUTPUT = 'output_analyza_train_raw'                         # Adresár, kam sa uložia výstupy
+OUTPUT = 'output_analyza_train_raw'              # Adresár, kam sa uložia výstupy
 
 
 # ==============================================================

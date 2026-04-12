@@ -107,7 +107,7 @@ def analyza_chybajucich_vzoriek(df):
     print("\n=== ANALÝZA CHÝBAJÚCICH VZORIEK (NaN HODNOTY) ===")   # Nadpis sekcie
 
     # Zoznam stĺpcov, ktoré chceme skontrolovať
-    stlpce = ['Irradiance', 'IrradianceNotCompensated', 'BodyTemperature',
+    stlpce = ['Irradiance', 'BodyTemperature',
               'RelativeHumidity', 'HumidityTemp', 'Pressure', 'PressureAvg',
               'TiltAngle', 'FanSpeed', 'SunAzimuth', 'SunZenith']
 
@@ -137,8 +137,7 @@ def detekcia_poskodennych_vzoriek(df):
 
     # Fyzikálne medze (min, max) pre každý parameter
     fyzikalne_medze = {
-        'Irradiance':               (-5,   1500),   # W/m²  – slnečné žiarenie
-        'IrradianceNotCompensated': (-5,   1500),   # W/m²
+        'Irradiance':               (0,    1500),   # W/m²  – slnečné žiarenie (záporné hodnoty sú fyzikálne nemožné)
         'BodyTemperature':          (-40,  80),     # °C    – teplota senzora
         'RelativeHumidity':         (0,    100),    # %     – relatívna vlhkosť
         'HumidityTemp':             (-40,  60),     # °C    – teplota vlhkomeru
