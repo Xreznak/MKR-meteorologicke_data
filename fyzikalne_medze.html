@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fyzikálne medze parametrov – Meteorologická stanica</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0f4f8;
+      color: #1a2332;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    header {
+      max-width: 1100px;
+      margin: 0 auto 2rem;
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #1a2332;
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      color: #4a5568;
+      font-size: 0.95rem;
+    }
+
+    .card {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead tr {
+      background: #2b4c7e;
+      color: #fff;
+    }
+
+    thead th {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) { background: #f7fafc; }
+    tbody tr:hover { background: #ebf4ff; }
+
+    td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    .col-name {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-weight: 600;
+      color: #2b4c7e;
+      white-space: nowrap;
+    }
+
+    .col-unit {
+      color: #718096;
+      white-space: nowrap;
+    }
+
+    .col-range {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-weight: 600;
+      color: #276749;
+      white-space: nowrap;
+    }
+
+    .col-desc { color: #2d3748; line-height: 1.45; }
+
+    .col-source a {
+      color: #3182ce;
+      text-decoration: none;
+      font-size: 0.82rem;
+      display: inline-block;
+      margin: 1px 0;
+    }
+    .col-source a:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 9px;
+      margin-bottom: 4px;
+      letter-spacing: 0.02em;
+    }
+    .badge-rad  { background: #fef3c7; color: #92400e; }
+    .badge-temp { background: #fee2e2; color: #991b1b; }
+    .badge-hum  { background: #dbeafe; color: #1e40af; }
+    .badge-pres { background: #e0e7ff; color: #3730a3; }
+    .badge-mech { background: #d1fae5; color: #065f46; }
+    .badge-sun  { background: #fce7f3; color: #9d174d; }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #a0aec0;
+      padding: 0.5rem 1rem 0.2rem;
+      background: #f7fafc;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    footer {
+      max-width: 1100px;
+      margin: 1.5rem auto 0;
+      font-size: 0.8rem;
+      color: #718096;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Fyzikálne medze meraných parametrov</h1>
+  <p>Meteorologická stanica Alpnach, Švajčiarsko &nbsp;|&nbsp; Kipp &amp; Zonen SMP-series pyranometer</p>
+</header>
+
+<div class="card">
+<table>
+  <thead>
+    <tr>
+      <th>Stĺpec v CSV</th>
+      <th>Jednotka</th>
+      <th>Min</th>
+      <th>Max</th>
+      <th>Zdôvodnenie medze</th>
+      <th>Zdroj</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <!-- ── ŽIARENIE ─────────────────────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Žiarenie</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-rad">RAD</span><br>Irradiance</td>
+      <td class="col-unit">W/m²</td>
+      <td class="col-range">0</td>
+      <td class="col-range">1 500</td>
+      <td class="col-desc">
+        Záporné žiarenie je fyzikálne nemožné. Maximum pri zemskom povrchu ~1 050 W/m² (priamy lúč pri slnku v nadhlavníku), s odrazom od snehu/oblakov môže dosahovať ~1 400 W/m². Hranica 1 500 W/m² poskytuje bezpečnostnú rezervu.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Solar_irradiance" target="_blank">Solar irradiance – Wikipedia</a><br>
+        <a href="https://www.researchgate.net/post/Are_there_minimum_and_maximum_threshold_of_solar_irradiance" target="_blank">ResearchGate – threshold of solar irradiance</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-rad">RAD</span><br>IrradianceNotCompensated</td>
+      <td class="col-unit">W/m²</td>
+      <td class="col-range">0</td>
+      <td class="col-range">1 500</td>
+      <td class="col-desc">
+        Nekompenzovaná hodnota žiarenia pred teplotnou korekciou – rovnaké fyzikálne medze ako <em>Irradiance</em>.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Solar_irradiance" target="_blank">Solar irradiance – Wikipedia</a>
+      </td>
+    </tr>
+
+    <!-- ── TEPLOTA ─────────────────────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Teplota</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-temp">TEMP</span><br>BodyTemperature</td>
+      <td class="col-unit">°C</td>
+      <td class="col-range">−40</td>
+      <td class="col-range">80</td>
+      <td class="col-desc">
+        Teplota tela pyranometra. Kipp &amp; Zonen SMP10 udáva operačný teplotný rozsah −40 až +70 °C. Horná hranica rozšírená na 80 °C ako bezpečnostná rezerva (priame slnečné žiarenie na telo senzora).
+      </td>
+      <td class="col-source">
+        <a href="https://www.kippzonen.com/Product/281/SMP10-Pyranometer" target="_blank">Kipp &amp; Zonen SMP10 Pyranometer</a><br>
+        <a href="https://www.campbellsci.com/cvf4" target="_blank">Campbell CVF4 Ventilation Unit spec</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-temp">TEMP</span><br>HumidityTemp</td>
+      <td class="col-unit">°C</td>
+      <td class="col-range">−40</td>
+      <td class="col-range">60</td>
+      <td class="col-desc">
+        Teplota snímaná snímačom relatívnej vlhkosti. Campbell EE181 a HygroVue10 udávajú rozsah −40 až +60 °C.
+      </td>
+      <td class="col-source">
+        <a href="https://www.campbellsci.com/ee181-l" target="_blank">Campbell EE181 sensor spec</a><br>
+        <a href="https://www.campbellsci.com/hygrovue10" target="_blank">Campbell HygroVue10 spec</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-temp">TEMP</span><br>PressureTemp</td>
+      <td class="col-unit">°C</td>
+      <td class="col-range">−40</td>
+      <td class="col-range">80</td>
+      <td class="col-desc">
+        Vnútorná teplota tlakového senzora. Rovnaké medze ako <em>BodyTemperature</em> – senzor je umiestený v rovnakej skrinke.
+      </td>
+      <td class="col-source">
+        <a href="https://www.kippzonen.com/Product/281/SMP10-Pyranometer" target="_blank">Kipp &amp; Zonen SMP10 Pyranometer</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-temp">TEMP</span><br>PressureTempAvg</td>
+      <td class="col-unit">°C</td>
+      <td class="col-range">−40</td>
+      <td class="col-range">80</td>
+      <td class="col-desc">
+        Kĺzavý priemer teploty tlakového senzora – rovnaké fyzikálne medze ako <em>PressureTemp</em>.
+      </td>
+      <td class="col-source">
+        <a href="https://www.kippzonen.com/Product/281/SMP10-Pyranometer" target="_blank">Kipp &amp; Zonen SMP10 Pyranometer</a>
+      </td>
+    </tr>
+
+    <!-- ── VLHKOSŤ ─────────────────────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Vlhkosť</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-hum">HUM</span><br>RelativeHumidity</td>
+      <td class="col-unit">%</td>
+      <td class="col-range">0</td>
+      <td class="col-range">100</td>
+      <td class="col-desc">
+        Relatívna vlhkosť vzduchu. Fyzikálna definícia: 0 % = absolútne suché, 100 % = nasýtené vodnou parou. Hodnoty mimo tohto rozsahu sú fyzikálne nemožné.
+      </td>
+      <td class="col-source">
+        <a href="https://www.campbellsci.com/ee181-l" target="_blank">Campbell EE181 sensor spec</a>
+      </td>
+    </tr>
+
+    <!-- ── TLAK ───────────────────────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Atmosferický tlak</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-pres">PRES</span><br>Pressure</td>
+      <td class="col-unit">hPa</td>
+      <td class="col-range">870</td>
+      <td class="col-range">1 085</td>
+      <td class="col-desc">
+        Atmosferický tlak pri povrchu. Historické extrémy: minimum 870 hPa (stred tropického cyklónu), maximum 1 084.8 hPa (Tosontsengel, Mongolsko, 19. 12. 2001).
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Atmospheric_pressure" target="_blank">Atmospheric pressure – Wikipedia</a><br>
+        <a href="https://www.noaa.gov/jetstream/atmosphere/air-pressure" target="_blank">NOAA – Air Pressure</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-pres">PRES</span><br>PressureAvg</td>
+      <td class="col-unit">hPa</td>
+      <td class="col-range">870</td>
+      <td class="col-range">1 085</td>
+      <td class="col-desc">
+        Kĺzavý priemer atmosferického tlaku – rovnaké fyzikálne medze ako <em>Pressure</em>.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Atmospheric_pressure" target="_blank">Atmospheric pressure – Wikipedia</a>
+      </td>
+    </tr>
+
+    <!-- ── MECHANICKÉ ─────────────────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Mechanické parametre (ventilátor, ohrievač, naklonenie)</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-mech">MECH</span><br>TiltAngle</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">−10</td>
+      <td class="col-range">10</td>
+      <td class="col-desc">
+        Uhol naklonenia pyranometra od horizontály. Pyranometre sa inštalujú takmer horizontálne – odchýlka nad ±10° signalizuje pád alebo posunutie senzora. V dátach: max nameraná hodnota 2.08°.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Inclinometer" target="_blank">Inclinometer – Wikipedia</a><br>
+        <a href="https://www.codasensor.com/inclinometer-and-tilt-sensor-functionality-types-and-applications.html" target="_blank">Coda Sensor – Inclinometer applications</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-mech">MECH</span><br>TiltAngleAvg</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">−10</td>
+      <td class="col-range">10</td>
+      <td class="col-desc">
+        Kĺzavý priemer uhla naklonenia – rovnaké medze ako <em>TiltAngle</em>. V dátach: max 0.18°.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Inclinometer" target="_blank">Inclinometer – Wikipedia</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-mech">MECH</span><br>FanSpeed</td>
+      <td class="col-unit">RPM</td>
+      <td class="col-range">0</td>
+      <td class="col-range">15 000</td>
+      <td class="col-desc">
+        Otáčky ventilátora ventilačnej jednotky CVF4. V dátach: 8 779–9 490 RPM. Horná hranica 15 000 RPM zodpovedá fyzikálnemu limitu typických DC ventilátorov tohto typu.
+      </td>
+      <td class="col-source">
+        <a href="https://www.kippzonen.com/Product/262/CVF4-Ventilation-Unit" target="_blank">Kipp &amp; Zonen CVF4 Ventilation Unit</a><br>
+        <a href="https://www.campbellsci.com/cvf4" target="_blank">Campbell CVF4-L spec</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-mech">MECH</span><br>HeaterCurrent</td>
+      <td class="col-unit">A</td>
+      <td class="col-range">0</td>
+      <td class="col-range">1.0</td>
+      <td class="col-desc">
+        Prúd ohrievača CVF4. Celkový odber jednotky pri 12 V s ohrievačom 5.5 W je 0.9 A. V dátach: 0.320–0.337 A. Horná hranica 1.0 A pokrýva maximálny odber ohrievača.
+      </td>
+      <td class="col-source">
+        <a href="https://www.campbellsci.com/cvf4" target="_blank">Campbell CVF4-L spec (0.9 A at 12 V with heater)</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-mech">MECH</span><br>FanCurrent</td>
+      <td class="col-unit">A</td>
+      <td class="col-range">0</td>
+      <td class="col-range">0.5</td>
+      <td class="col-desc">
+        Prúd ventilátora CVF4. Ventilátor spotrebuje ~5 W pri 12 V → ~0.42 A. V dátach: 0.064–0.073 A (meranie čiastkového obvodu). Horná hranica 0.5 A.
+      </td>
+      <td class="col-source">
+        <a href="https://www.campbellsci.com/cvf4" target="_blank">Campbell CVF4-L spec</a>
+      </td>
+    </tr>
+
+    <!-- ── POLOHA SLNKA / STANICE ─────────────────────────── -->
+    <tr class="section-label"><td colspan="6">Poloha stanice a slnka</td></tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-sun">GEO</span><br>SunLatitude</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">−90</td>
+      <td class="col-range">90</td>
+      <td class="col-desc">
+        Zemepisná šírka meteorologickej stanice (v dátach konštantná: 46.9359° = Alpnach, Švajčiarsko). Fyzikálne medze WGS84: −90° (južný pól) až +90° (severný pól).
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Geographic_coordinate_system" target="_blank">Geographic coordinate system – Wikipedia</a><br>
+        <a href="https://gisgeography.com/wgs84-world-geodetic-system/" target="_blank">WGS84 – GIS Geography</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-sun">GEO</span><br>SunLongitude</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">−180</td>
+      <td class="col-range">180</td>
+      <td class="col-desc">
+        Zemepisná dĺžka meteorologickej stanice (v dátach konštantná: 8.2758° = Alpnach, Švajčiarsko). Fyzikálne medze WGS84: −180° až +180°.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Geographic_coordinate_system" target="_blank">Geographic coordinate system – Wikipedia</a><br>
+        <a href="https://gisgeography.com/wgs84-world-geodetic-system/" target="_blank">WGS84 – GIS Geography</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-sun">SUN</span><br>SunAzimuth</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">0</td>
+      <td class="col-range">360</td>
+      <td class="col-desc">
+        Kompasový smer slnka: 0° = sever, 90° = východ, 180° = juh, 270° = západ. Ranné hodnoty 0–180°, poobedné 180–360°. V dátach: 53.4°–306.6°.
+      </td>
+      <td class="col-source">
+        <a href="https://www.sciencedirect.com/topics/engineering/solar-azimuth-angle" target="_blank">Solar Azimuth Angle – ScienceDirect</a><br>
+        <a href="https://gml.noaa.gov/grad/solcalc/azel.html" target="_blank">NOAA Solar Position Calculator</a>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="col-name"><span class="badge badge-sun">SUN</span><br>SunZenith</td>
+      <td class="col-unit">°</td>
+      <td class="col-range">0</td>
+      <td class="col-range">90</td>
+      <td class="col-desc">
+        Zenitový uhol slnka: 0° = slnko priamo nad hlavou, 90° = horizont (západ/východ slnka). Keďže merania prebiehajú výhradne počas denného svetla, hodnoty ≥90° signalizujú chybu. V dátach: max 66.5°.
+      </td>
+      <td class="col-source">
+        <a href="https://en.wikipedia.org/wiki/Solar_zenith_angle" target="_blank">Solar zenith angle – Wikipedia</a><br>
+        <a href="https://gml.noaa.gov/grad/solcalc/glossary.html" target="_blank">NOAA Solar Calculator Glossary</a>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+</div>
+
+<footer>
+  Vygenerované pre projekt MKR – Meteorologické dáta &nbsp;|&nbsp; Zdroje: Kipp &amp; Zonen, Campbell Scientific, NOAA, Wikipedia, WMO
+</footer>
+
+</body>
+</html>

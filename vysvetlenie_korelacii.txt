@@ -1,0 +1,202 @@
+==============================================================
+  VYSVETLENIE KORELAČNÝCH GRAFOV – SCATTER PLOTY
+  Meteorologická stanica Alpnach, Švajčiarsko
+==============================================================
+
+Každý scatter plot zobrazuje vzťah medzi dvoma parametrami.
+Každý bod = jedna vzorka (meranie).
+Hodnota r = Pearsonov korelačný koeficient:
+  r blízko +1 → silná kladná závislosť (oba rastú spoločne)
+  r blízko  0 → žiadna lineárna závislosť
+  r blízko -1 → silná záporná závislosť (jeden rastie, druhý klesá)
+
+Poznámka k SunZenith: stĺpec je pomenovaný „zenitový uhol", ale hodnoty
+(0° až 66.5°) zodpovedajú výškovému uhlu slnka nad horizontom (elevácia),
+nie tradičnému zenitnému uhlu. Maximum 66.5° odpovedá maximálnej výške
+slnka nad Alpnach pri letnom slnovrate (46.94°N: 90° − 46.94° + 23.45° ≈ 66.5°).
+
+
+--------------------------------------------------------------
+  GRAFY 1–3: Žiarenie / Atmosferický tlak / Teplota senzora
+--------------------------------------------------------------
+
+Tieto tri grafy tvoria trojuholník závislostí medzi žiarením, tlakom
+a teplotou senzora. Treťou závislosťou (tlak vs teplota) vysvetlíme,
+prečo prvé dve vyzerajú skoro rovnako.
+
+Graf 1 – Žiarenie vs Atmosferický tlak (r = +0.59)
+  Stredná kladná závislosť. Pri vysokom tlaku (anticyklóna) je obloha
+  väčšinou jasná a slnečné žiarenie dosahuje senzor bez prekážok.
+  Pri nízkom tlaku (cyklóna, fronty) dominujú oblaky a žiarenie klesá.
+  Vzťah nie je priamočiary – atmosferický tlak priamo neovplyvňuje slnko,
+  ide o nepriamu väzbu cez typ počasia.
+
+Graf 2 – Žiarenie vs Teplota senzora (r = +0.57)
+  Stredná kladná závislosť, hodnota r takmer rovnaká ako v grafe 1.
+  Viac slnečného žiarenia → viac energie dopadá na telo senzora → senzor
+  sa ohrieva. Je to priamejší fyzikálny vzťah než graf 1.
+  Napriek tomu r ≈ 0.57, nie vyššie – senzor ovplyvňuje aj okolitá teplota
+  vzduchu a vietor, nielen žiarenie.
+
+Graf 3 – Atmosferický tlak vs Teplota senzora (r = +0.94)
+  Veľmi silná kladná závislosť – takmer dokonalá priamka v grafe.
+  Vysvetlenie: oba parametre riadi TEN ISTÝ jav – ROČNÉ OBDOBIE.
+    Zima → nízky tlak (časté búrky a fronty) + nízka teplota senzora.
+    Leto → vysoký tlak (stabilné anticyklóny) + vysoká teplota senzora.
+  Preto grafy 1 a 2 vyzerajú podobne (oba majú r ≈ 0.57–0.59):
+  tlak a teplota senzora nie sú nezávislé prediktory žiarenia – oba sú
+  len dôsledkom sezónneho cyklu. Nie je to teda priama kauzalita, ale
+  spoločná príčina (sezóna → tlak aj teplota aj žiarenie súčasne).
+
+
+--------------------------------------------------------------
+  GRAFY 4–6: Žiarenie / Zenitový uhol slnka / Azimut slnka
+--------------------------------------------------------------
+
+Tieto tri grafy skúmajú vzťah žiarenia s polohou slnka na oblohe.
+Poloha slnka je určená dvoma uhlami: výškou (SunZenith) a smerom (SunAzimuth).
+
+Graf 4 – Žiarenie vs Zenitový uhol slnka (r = +0.79)
+  Silná kladná závislosť – najsilnejšia spomedzi všetkých 9 grafov.
+  Čím vyššie je slnko nad horizontom, tým viac žiarenia dopadá na senzor.
+  Fyzikálny dôvod: pri nižšej eleváci prechádza lúč dlhšou vrstvou
+  atmosféry → väčší rozptyl a absorpcia → menej žiarenia pri povrchu.
+  Toto je PRIAMY fyzikálny vzťah (príčina → následok), nie sezónny efekt.
+
+Graf 5 – Žiarenie vs Azimut slnka (r = −0.05)
+  Takmer nulová závislosť – bodový graf vyzerá ako neštruktúrovaný mrak.
+  Azimut (kompasový smer slnka: východ = 90°, juh = 180°, západ = 270°)
+  sám o sebe nehovorí nič o intenzite žiarenia. Rovnaký azimut nastane
+  ráno aj večer – raz pri nízkom a raz pri rastúcom žiarení. Aj pri
+  rovnakom smere slnka sa žiarenie líši podľa ročného obdobia a oblačnosti.
+
+Graf 6 – Zenitový uhol slnka vs Azimut slnka (r = −0.03)
+  Takmer nulová lineárna závislosť, ale bodový graf má oblúkový tvar
+  (nie náhodný mrak). Dôvod: slnko každý deň opisuje oblúk po oblohe –
+  ráno vychádza na severovýchode/východe (azimut ~60–90°) pri nízkej
+  eleváci, na poludnie je na juhu (azimut ~180°) pri maximálnej eleváci,
+  večer zapadá na severozápade/západe (azimut ~270–300°) opäť pri nízkej
+  eleváci. Tento oblúk je symetrický – preto lineárna korelácia vychádza
+  blízko nuly, aj keď vzťah existuje (je nelineárny, nie lineárny).
+
+
+--------------------------------------------------------------
+  GRAFY 7–9: Atmosferický tlak / Rýchlosť ventilátora / Teplota tlakomera
+--------------------------------------------------------------
+
+Tieto tri grafy odhaľujú výraznú závislosť medzi tlakom, teplotou
+vo vnútri senzora a rýchlosťou ventilátora chladiacej jednotky CVF4.
+
+Graf 7 – Atmosferický tlak vs Rýchlosť ventilátora (r = −0.998)
+  Takmer dokonalá záporná závislosť – jedna z najsilnejších v datasete.
+  Nízky tlak (zima, búrkové počasie) → ventilátor beží rýchlejšie.
+  Vysoký tlak (leto, stabilné anticyklóny) → ventilátor beží pomalšie.
+  Fyzikálna príčina: v zime je okolitá teplota nízka, jednotka CVF4
+  potrebuje viac energie (vyššie otáčky ventilátora + ohrievač) na udržanie
+  teploty senzora. V lete je teplota vysoká, chladenie je menej potrebné.
+  r ≈ −0.998 naznačuje, že tlak je takmer dokonalým prediktorom otáčok –
+  oba veličiny sú riadené sezónou bez iného výrazného rušivého vplyvu.
+
+Graf 8 – Atmosferický tlak vs Teplota tlakomera (r = +0.94)
+  Silná kladná závislosť – rovnaký sezónny efekt ako v grafe 3.
+  Vysoký tlak = leto = teplé vnútro senzora. Nízky tlak = zima = chladné.
+  Teplota tlakomera (PressureTemp) a teplota senzora (BodyTemperature)
+  sú prakticky totožné (r ≈ 1.00 medzi sebou) – merajú teplotu v tej
+  istej skrinke, len iným snímačom.
+
+Graf 9 – Rýchlosť ventilátora vs Teplota tlakomera (r = −0.95)
+  Silná záporná závislosť. Nízka teplota tlakomera (zima) → vyššie otáčky.
+  Vysoká teplota tlakomera (leto) → nižšie otáčky. Ventilátor CVF4 teda
+  reaguje na teplotu vnútra skrinky – čím je chladnejšie, tým viac musí
+  pracovať na udržanie prevádzkovej teploty optiky pyranometra.
+  Trojuholník grafov 7–9 ukazuje, že tlak, teplota tlakomera a rýchlosť
+  ventilátora sú tri navzájom previazané prejavy jedného sezónneho javu.
+
+
+--------------------------------------------------------------
+  GRAFY 10–12: Teplota senzora / Teplota tlakomera / Teplota vlhkomera
+--------------------------------------------------------------
+
+Tieto tri grafy tvoria trojuholník troch teplotných senzorov, ktoré sú umiestnené
+v tej istej alebo susednej skrinke meteorologickej stanice.
+
+Graf 10 – Teplota senzora vs Teplota tlakomera (r ≈ +1.00)
+  Takmer dokonalá kladná závislosť – body ležia na jednej priamke.
+  BodyTemperature (teplota tela pyranometra) a PressureTemp (teplota tlakomera)
+  merajú teplotu v tej istej skrinke CVF4, len dvoma rôznymi snímačmi.
+  Rozdiel medzi nimi je minimálny – ide o redundantné meranie pre istotu.
+  Ak r nie je presne +1.00, odchýlky spôsobuje rôzna tepelná zotrvačnosť
+  každého snímača alebo jeho presná poloha v skrinke.
+
+Graf 11 – Teplota senzora vs Teplota vlhkomera (r ≈ +0.9x)
+  Silná kladná závislosť, ale mierne nižšia než graf 10.
+  HumidityTemp je teplota meraná snímačom vlhkosti – ten môže byť umiestnený
+  na inom mieste než telo pyranometra, prípadne vystavený väčšiemu vplyvu
+  okolitého vzduchu. Preto oba stúpajú a klesajú spoločne (sezóna),
+  ale ich lokálna závislosť nie je tak tesná ako medzi BodyTemperature
+  a PressureTemp, ktoré sú fyzicky bližšie pri sebe.
+
+Graf 12 – Teplota tlakomera vs Teplota vlhkomera (r ≈ +0.9x)
+  Rovnaký charakter ako graf 11 – PressureTemp a HumidityTemp sú oba
+  riadené sezónou, ale ich vzájomná závislosť je o niečo voľnejšia
+  než závislosť oboch s BodyTemperature.
+  Trojuholník grafov 10–12 ukazuje, že všetky tri teploty sú prejavy
+  toho istého javu (sezónna teplota), s tým že BodyTemperature
+  a PressureTemp sú si takmer identické, kým HumidityTemp je trochu
+  „vzdialená" – pravdepodobne meraná na mieste s väčším vplyvom
+  okolitého vzduchu.
+
+
+--------------------------------------------------------------
+  ZHRNUTIE
+--------------------------------------------------------------
+
+  Najsilnejšia závislosť:
+    Atmosf. tlak vs Rýchlosť ventilátora (r = −0.998)
+    → takmer deterministický vzťah riadený sezónou
+
+  Najvýznamnejší fyzikálny vzťah:
+    Žiarenie vs Zenitový uhol slnka (r = +0.79)
+    → priama príčinno-následková väzba (výška slnka → intenzita žiarenia)
+
+  Najzaujímavejší „zdanlivý" vzťah:
+    Žiarenie vs Tlak (r = +0.59) a Žiarenie vs Teplota senzora (r = +0.57)
+    → vyzerajú ako dve nezávislé závislosti, ale obe sú len odrazom
+      sezónneho cyklu (tlak a teplota sú navzájom r = +0.94)
+
+  Takmer identické merania:
+    Teplota senzora vs Teplota tlakomera (r ≈ +1.00)
+    → dva snímače v tej istej skrinke – redundantné meranie pre istotu
+
+  Žiadna lineárna závislosť:
+    Žiarenie vs Azimut slnka (r = −0.05)
+    Zenitový uhol vs Azimut slnka (r = −0.03)
+    → smer slnka na kompase nehovorí nič o intenzite žiarenia
+
+
+--------------------------------------------------------------
+  POZNÁMKA: Čo je ventilátor CVF4 a prečo meriame jeho rýchlosť
+--------------------------------------------------------------
+
+FanSpeed (rýchlosť ventilátora) nie je ventilátor počítača ani rozvádzača.
+Je to ventilátor vstavaný do jednotky CVF4 od Kipp & Zonen – špeciálnej
+vetracej/termostabilizačnej jednotky, ktorá obklopuje pyranometer SMP10.
+
+Čo CVF4 robí:
+  - Fúka vzduch cez optickú šošovku pyranometra, čím ju chráni pred
+    kondenzáciou, námrazou, prachom a hmlovými kvapkami.
+  - Udržuje stabilnú prevádzkovú teplotu optiky, aby kalibrácia senzora
+    zostala platná bez ohľadu na vonkajšiu teplotu.
+  - V zime aktivuje aj vstavaný ohrievač (HeaterCurrent) spolu s vyššími
+    otáčkami ventilátora.
+  - Bez CVF4 by merania žiarenia pri zlom počasí boli nespoľahlivé.
+
+Prečo koreluje s atmosferickým tlakom (r = −0.998):
+  Oba parametre riadi sezóna:
+    Zima → nízky tlak (fronty, búrky) + vonku je chladno
+         → CVF4 musí bežať naplno (vysoké RPM) + ohrievač beží
+    Leto → vysoký tlak (anticyklóny) + vonku je teplo
+         → CVF4 beží na minimum, chladenie takmer nepotrebné
+  Výsledok: tlak je takmer dokonalým prediktorom otáčok ventilátora,
+  pretože oba sú len rôznymi prejavmi toho istého sezónneho cyklu.
+==============================================================
