@@ -10,8 +10,10 @@ def nacitaj_data(cesta_k_suboru):
     Načíta CSV súbor a pripraví dáta na analýzu.
     Vracia: pandas DataFrame s parsovanými časovými značkami a pomocnými stĺpcami.
     """
-    # Načítanie CSV súboru do tabuľky DataFrame
-    df = pd.read_csv(cesta_k_suboru)
+    # Načítanie CSV súboru do tabuľky DataFrame.
+    # keep_default_na=False + na_values=[''] zabezpečí, že prázdne polia (1,2,,5)
+    # sú načítané ako NaN, nie ako prázdny reťazec ani ignorované.
+    df = pd.read_csv(cesta_k_suboru, keep_default_na=False, na_values=[''])
 
     # Stĺpec DateTime má formát "MM/DD/YYYY HH:MM:SS.mmm#číslo_snímky"
     # Odstraňujeme časť za '#', ktorá označuje číslo snímky (nie je súčasťou času)

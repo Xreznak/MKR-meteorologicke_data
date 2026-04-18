@@ -9,6 +9,32 @@ import matplotlib.pyplot as plt    # Kreslenie grafov
 import matplotlib.dates as mdates  # Formátovanie dátumov na osiach
 
 
+# ==============================================================
+# FYZIKÁLNE MEDZE – jediné miesto definície, importujú ostatné moduly
+# ==============================================================
+
+FYZIKALNE_MEDZE = {
+    'Irradiance':               (0,     1500),  # W/m²  – záporné žiarenie fyzikálne nemožné; max ~1400 W/m² pri povrchu
+    'IrradianceNotCompensated': (0,     1500),  # W/m²  – rovnaké medze ako Irradiance (nekompenzovaná hodnota)
+    'BodyTemperature':          (-40,   80),    # °C    – operačný rozsah Kipp & Zonen SMP10: -40 až +70 °C
+    'RelativeHumidity':         (0,     100),   # %     – fyzikálna definícia relatívnej vlhkosti
+    'HumidityTemp':             (-40,   60),    # °C    – rozsah snímača vlhkosti (Campbell EE181: -40 až +60 °C)
+    'Pressure':                 (870,   1085),  # hPa   – pozemné extrémy redukované na more: min 870 (cyklón), max 1084.8 (Mongolsko)
+    'PressureAvg':              (870,   1085),  # hPa   – rovnaké medze ako Pressure
+    'PressureTemp':             (-40,   80),    # °C    – teplota tlakového senzora (rovnaký rozsah ako BodyTemperature)
+    'PressureTempAvg':          (-40,   80),    # °C    – priemer teploty tlakového senzora
+    'TiltAngle':                (-10,   10),    # °     – pyranometer sa inštaluje blízko horizontály; ±10° pokrýva aj chyby montáže
+    'TiltAngleAvg':             (-10,   10),    # °     – priemer uhla naklonenia
+    'FanSpeed':                 (0,     15000), # RPM   – typický DC ventilátor; v dátach: 8779–9490 RPM
+    'HeaterCurrent':            (0,     1.0),   # A     – CVF4 celkový odber 0.9 A pri 12 V (ventilátor + ohrievač)
+    'FanCurrent':               (0,     0.5),   # A     – ventilátor CVF4 ~5 W pri 12 V → ~0.42 A; v dátach: 0.064–0.073 A
+    'SunLatitude':              (-90,   90),    # °     – zemepisná šírka stanice; WGS84: ±90°
+    'SunLongitude':             (-180,  180),   # °     – zemepisná dĺžka stanice; WGS84: ±180°
+    'SunAzimuth':               (0,     360),   # °     – kompasový smer slnka (0° = sever, 180° = juh)
+    'SunZenith':                (0,     90),    # °     – 0° = slnko v nadhlavníku, 90° = horizont; na 46.94°N (Alpnach) záporné hodnoty fyzikálne neexistujú
+}
+
+
 # --------------------------------------------------------------
 # 1. Chýbajúce dni
 # --------------------------------------------------------------
@@ -106,10 +132,12 @@ def analyza_chybajucich_vzoriek(df):
     """
     print("\n=== ANALÝZA CHÝBAJÚCICH VZORIEK (NaN HODNOTY) ===")   # Nadpis sekcie
 
-    # Zoznam stĺpcov, ktoré chceme skontrolovať
-    stlpce = ['Irradiance', 'BodyTemperature',
-              'RelativeHumidity', 'HumidityTemp', 'Pressure', 'PressureAvg',
-              'TiltAngle', 'FanSpeed', 'SunAzimuth', 'SunZenith']
+    # Zoznam stĺpcov, ktoré chceme skontrolovať (všetky numerické merané stĺpce)
+    stlpce = ['Irradiance', 'IrradianceNotCompensated',
+              'BodyTemperature', 'RelativeHumidity', 'HumidityTemp',
+              'Pressure', 'PressureAvg', 'PressureTemp', 'PressureTempAvg',
+              'TiltAngle', 'TiltAngleAvg', 'FanSpeed', 'HeaterCurrent', 'FanCurrent',
+              'SunLatitude', 'SunLongitude', 'SunAzimuth', 'SunZenith']
 
     # Výpočet počtu NaN hodnôt pre každý stĺpec
     chybajuce = df[stlpce].isnull().sum()              # Počet NaN v každom stĺpci
@@ -135,24 +163,10 @@ def detekcia_poskodennych_vzoriek(df):
     """
     print("\n=== DETEKCIA POŠKODENÝCH VZORIEK (FYZIKÁLNE MEDZE) ===")   # Nadpis sekcie
 
-    # Fyzikálne medze (min, max) pre každý parameter
-    fyzikalne_medze = {
-        'Irradiance':               (0,    1500),   # W/m²  – slnečné žiarenie (záporné hodnoty sú fyzikálne nemožné)
-        'BodyTemperature':          (-40,  80),     # °C    – teplota senzora
-        'RelativeHumidity':         (0,    100),    # %     – relatívna vlhkosť
-        'HumidityTemp':             (-40,  60),     # °C    – teplota vlhkomeru
-        'Pressure':                 (800,  1100),   # hPa   – atmosferický tlak
-        'PressureAvg':              (800,  1100),   # hPa
-        'TiltAngle':                (-90,  90),     # °     – uhol naklonenia
-        'FanSpeed':                 (0,    15000),  # RPM   – rýchlosť ventilátora
-        'SunZenith':                (0,    180),    # °     – zenitový uhol slnka
-        'SunAzimuth':               (0,    360),    # °     – azimut slnka
-    }
-
     # Začíname s maskou, kde všetko je False (žiadna vzorka nie je poškodená)
     poskodene_maska = pd.Series(False, index=df.index)   # Inicializácia prázdnej masky
 
-    for stlpec, (min_val, max_val) in fyzikalne_medze.items():   # Pre každý parameter
+    for stlpec, (min_val, max_val) in FYZIKALNE_MEDZE.items():   # Pre každý parameter
         if stlpec not in df.columns:   # Preskočíme ak stĺpec v dátach neexistuje
             continue
         # Vzorky mimo medzi, ktoré zároveň nie sú NaN
@@ -224,3 +238,57 @@ def histogramy_dlzok_chyb(df, poskodene_maska, output_dir):
             print(f"    Graf uložený: histogram_dlzok_{nazov_suboru}.png")   # Potvrdenie
         else:
             print(f"    Žiadne za sebou idúce {popis} neboli nájdené.")   # Informácia ak nič nenájdené
+
+
+# --------------------------------------------------------------
+# 5. Čistenie dát – odstránenie chybných riadkov a uloženie CSV
+# --------------------------------------------------------------
+
+def vycisti_a_uloz(df, output_dir):
+    """
+    Odstráni všetky riadky s chýbajúcimi (NaN) alebo fyzikálne neplatnými hodnotami
+    a uloží výsledok ako cleaned.csv do výstupného adresára (OUTPUT).
+
+    Kritériá mazania (OR – stačí jedna podmienka):
+      1. Aspoň jedna NaN hodnota v sledovaných stĺpcoch
+      2. Aspoň jedna hodnota mimo fyzikálnych medzi (FYZIKALNE_MEDZE)
+
+    Vracia: vyčistený DataFrame
+    """
+    print("\n=== ČISTENIE DÁT A ULOŽENIE CLEANED.CSV ===")
+
+    sledovane = list(FYZIKALNE_MEDZE.keys())
+
+    # --- Maska chýbajúcich hodnôt (NaN) ---
+    sledovane_pritomne = [s for s in sledovane if s in df.columns]
+    maska_nan = df[sledovane_pritomne].isnull().any(axis=1)
+
+    # --- Maska hodnôt mimo fyzikálnych medzi ---
+    maska_poskodene = pd.Series(False, index=df.index)
+    for stlpec, (min_val, max_val) in FYZIKALNE_MEDZE.items():
+        if stlpec not in df.columns:
+            continue
+        mimo = ((df[stlpec] < min_val) | (df[stlpec] > max_val)) & df[stlpec].notna()
+        maska_poskodene = maska_poskodene | mimo
+
+    # --- Kombinovaná maska a štatistiky ---
+    maska_chybnych = maska_nan | maska_poskodene
+    print(f"  Riadkov pred čistením:                     {len(df):,}")
+    print(f"  Riadky s chýbajúcimi hodnotami (NaN):      {maska_nan.sum():,}")
+    print(f"  Riadky s hodnotami mimo fyzikálnych medzi: {maska_poskodene.sum():,}")
+    print(f"  Celkovo chybných riadkov (union):           {maska_chybnych.sum():,}")
+
+    # --- Odstránenie chybných riadkov ---
+    df_clean = df[~maska_chybnych].reset_index(drop=True)
+    print(f"  Riadkov po čistení:                        {len(df_clean):,}")
+
+    # --- Uloženie do cleaned.csv do výstupného adresára (OUTPUT) ---
+    cesta_cleaned = os.path.join(output_dir, 'cleaned.csv')
+
+    # Ukladáme len pôvodné stĺpce CSV (bez pomocných DateTime stĺpcov pridaných pri načítaní)
+    pomocne_stlpce = ['Date', 'Hour', 'Month', 'DayOfYear']
+    stlpce_csv = [s for s in df_clean.columns if s not in pomocne_stlpce]
+    df_clean[stlpce_csv].to_csv(cesta_cleaned, index=False)
+
+    print(f"  Uložené: {cesta_cleaned}  ({os.path.getsize(cesta_cleaned) / 1024:.0f} kB)")
+    return df_clean

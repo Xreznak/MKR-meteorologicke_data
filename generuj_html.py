@@ -16,24 +16,11 @@ from analyza_ziarenia  import rocna_analyza_ziarenia, denna_analyza_pre_mesiace
 from analyza_korelacie import korelacie_parametrov, suhrne_statistiky
 
 
-# Fyzikálne medze – rovnaké ako v analyza_chyb.py
-FYZIKALNE_MEDZE = {
-    'Irradiance':               (0,    1500),
-    'BodyTemperature':          (-40,  80),
-    'RelativeHumidity':         (0,    100),
-    'HumidityTemp':             (-40,  60),
-    'Pressure':                 (800,  1100),
-    'PressureAvg':              (800,  1100),
-    'TiltAngle':                (-90,  90),
-    'FanSpeed':                 (0,    15000),
-    'SunZenith':                (0,    180),
-    'SunAzimuth':               (0,    360),
-}
+# Fyzikálne medze – importujeme z analyza_chyb (jediné miesto definície)
+from analyza_chyb import FYZIKALNE_MEDZE
 
-# Stĺpce, ktoré zobrazíme v tabuľke chybných vzoriek
-ZOBRAZIT_STLPCE = ['DateTime', 'Irradiance', 'BodyTemperature', 'RelativeHumidity',
-                   'Pressure', 'PressureAvg', 'SunZenith', 'SunAzimuth',
-                   'TiltAngle', 'FanSpeed']
+# Stĺpce zobrazené v tabuľke poškodených vzoriek: DateTime + všetky sledované stĺpce
+ZOBRAZIT_STLPCE = ['DateTime'] + list(FYZIKALNE_MEDZE.keys())
 
 
 # ==============================================================
@@ -601,15 +588,13 @@ def generuj_html_report(csv_subor, output_dir):
   <div class="sekcia-hlavicka"><h2>7. Korelačná analýza parametrov</h2></div>
   <div class="sekcia-telo">
     <div class="vystup-text">{text_na_html(txt_korelacie)}</div>
-    <div class="dvojica">
-      <div class="obrazok-kontainer">
-        {img_tag('heatmapa', 'Korelačná matica')}
-        <div class="obrazok-popis">Pearsonova korelačná matica</div>
-      </div>
-      <div class="obrazok-kontainer">
-        {img_tag('scatter', 'Scatter plot korelácie')}
-        <div class="obrazok-popis">Scatter ploty vybraných dvojíc parametrov</div>
-      </div>
+    <div class="obrazok-kontainer">
+      {img_tag('heatmapa', 'Korelačná matica')}
+      <div class="obrazok-popis">Pearsonova korelačná matica</div>
+    </div>
+    <div class="obrazok-kontainer" style="margin-top:20px;">
+      {img_tag('scatter', 'Scatter plot korelácie')}
+      <div class="obrazok-popis">Scatter ploty vybraných dvojíc parametrov</div>
     </div>
   </div>
 </div>

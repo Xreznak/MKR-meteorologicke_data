@@ -8,11 +8,39 @@ import matplotlib.pyplot as plt  # Kreslenie grafov
 import seaborn as sns            # Heatmapa korelačnej matice
 
 
-# Zoznam parametrov, ktoré chceme analyzovať
+# Slovenské názvy stĺpcov pre popisky grafov
+NAZVY_SK = {
+    'Irradiance':               'Žiarenie [W/m²]',
+    'IrradianceNotCompensated': 'Žiarenie nekompenz. [W/m²]',
+    'BodyTemperature':          'Teplota senzora [°C]',
+    'RelativeHumidity':         'Relatívna vlhkosť [%]',
+    'HumidityTemp':             'Teplota vlhkomera [°C]',
+    'Pressure':                 'Atmosf. tlak [hPa]',
+    'PressureAvg':              'Atmosf. tlak – priemer [hPa]',
+    'PressureTemp':             'Teplota tlakomera [°C]',
+    'PressureTempAvg':          'Teplota tlakomera – priemer [°C]',
+    'TiltAngle':                'Uhol naklonenia [°]',
+    'TiltAngleAvg':             'Uhol naklonenia – priemer [°]',
+    'FanSpeed':                 'Rýchlosť ventilátora [RPM]',
+    'HeaterCurrent':            'Prúd ohrievača [A]',
+    'FanCurrent':               'Prúd ventilátora [A]',
+    'SunLatitude':              'Zem. šírka stanice [°]',
+    'SunLongitude':             'Zem. dĺžka stanice [°]',
+    'SunAzimuth':               'Azimut slnka [°]',
+    'SunZenith':                'Zenitový uhol slnka [°]',
+}
+
+
+# Zoznam parametrov pre korelačnú analýzu.
+# SunLatitude a SunLongitude sú vynechané – sú konštantné (jedna hodnota celý dataset),
+# korelácia konštanty s čímkoľvek je matematicky nedefinovaná (std = 0).
 PARAMETRE = [
-    'Irradiance', 'BodyTemperature', 'RelativeHumidity',
-    'HumidityTemp', 'Pressure', 'TiltAngle', 'FanSpeed',
-    'SunAzimuth', 'SunZenith'
+    'Irradiance', 'IrradianceNotCompensated',
+    'BodyTemperature', 'RelativeHumidity', 'HumidityTemp',
+    'Pressure', 'PressureAvg', 'PressureTemp', 'PressureTempAvg',
+    'TiltAngle', 'TiltAngleAvg', 'FanSpeed',
+    'HeaterCurrent', 'FanCurrent',
+    'SunAzimuth', 'SunZenith',
 ]
 
 
@@ -55,8 +83,12 @@ def korelacie_parametrov(df, output_dir):
         print(f"\n  PyTorch – Irradiance vs SunZenith: {r.item():.4f}")   # Výpis výsledku
 
     # --- Graf: Heatmapa korelačnej matice ---
-    fig, ax = plt.subplots(figsize=(11, 9))   # Nová figúra
-    sns.heatmap(kor_matica,
+    # Premenujeme indexy a stĺpce matice na slovenské skrátené názvy
+    nazvy_kratke = {k: v.split(' [')[0] for k, v in NAZVY_SK.items()}   # Bez jednotky (kratšie)
+    kor_matica_sk = kor_matica.rename(index=nazvy_kratke, columns=nazvy_kratke)
+
+    fig, ax = plt.subplots(figsize=(14, 11))   # Nová figúra (väčšia kvôli dlhším názvom)
+    sns.heatmap(kor_matica_sk,
                 annot=True,        # Zobrazenie hodnôt v každej bunke
                 fmt='.2f',         # Formát: 2 desatinné miesta
                 cmap='coolwarm',   # Modrá = negatívna, červená = pozitívna korelácia
@@ -71,30 +103,66 @@ def korelacie_parametrov(df, output_dir):
     plt.close()                    # Zatvoríme graf
     print(f"  Graf uložený: heatmapa_korelacie.png")   # Potvrdenie
 
-    # --- Graf: Scatter ploty pre vybrané dvojice parametrov ---
-    df_sc = df[['Irradiance', 'SunZenith', 'BodyTemperature', 'Pressure']].dropna()   # Vyberieme stĺpce
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))   # Tri grafy vedľa seba
+    # --- Graf: Scatter ploty ---
+    # Riadok 1 (pevný): trojuholník Žiarenie / Atmosf. tlak / Teplota senzora
+    #   – ukazuje že Pressure a BodyTemperature sú navzájom vysoko korelované
+    #     (sezónny efekt) a oba súvisia s Irradiance
+    # Riadok 2+: auto-vybrané najsilnejšie rôznorodé páry zo zvyšných parametrov
 
-    # Žiarenie vs Zenitový uhol slnka (fyzikálne priama závislosť)
-    axes[0].scatter(df_sc['SunZenith'], df_sc['Irradiance'], alpha=0.1, s=2, color='darkorange')
-    axes[0].set_xlabel('Zenitový uhol slnka [°]')   # Popis osi x
-    axes[0].set_ylabel('Žiarenie [W/m²]')            # Popis osi y
-    axes[0].set_title('Žiarenie vs Zenitový uhol')   # Nadpis
-    axes[0].grid(True, alpha=0.3)                    # Mriežka
+    # Pevných 9 párov – tri trojuholníky, každý vysvetľuje vzťahy v trojici parametrov:
+    #   Trojuholník 1: Žiarenie / Atmosf. tlak / Teplota senzora  (sezónny efekt)
+    #   Trojuholník 2: Atmosf. tlak / Rýchlosť ventilátora / Teplota tlakomera
+    #   Trojuholník 3: Žiarenie / Zenitový uhol slnka / Azimut slnka
+    PEVNE_PARY = [
+        ('Irradiance', 'Pressure'),          # 1. Žiarenie vs Atmosf. tlak
+        ('Irradiance', 'BodyTemperature'),   # 2. Žiarenie vs Teplota senzora
+        ('Pressure',   'BodyTemperature'),   # 3. Atmosf. tlak vs Teplota senzora
 
-    # Žiarenie vs Teplota senzora
-    axes[1].scatter(df_sc['BodyTemperature'], df_sc['Irradiance'], alpha=0.1, s=2, color='crimson')
-    axes[1].set_xlabel('Teplota senzora [°C]')       # Popis osi x
-    axes[1].set_ylabel('Žiarenie [W/m²]')            # Popis osi y
-    axes[1].set_title('Žiarenie vs Teplota senzora') # Nadpis
-    axes[1].grid(True, alpha=0.3)                    # Mriežka
+        ('Irradiance', 'SunZenith'),         # 4. Žiarenie vs Zenitový uhol slnka
+        ('Irradiance', 'SunAzimuth'),        # 5. Žiarenie vs Azimut slnka
+        ('SunZenith',  'SunAzimuth'),        # 6. Zenitový uhol slnka vs Azimut slnka
 
-    # Teplota senzora vs Atmosferický tlak
-    axes[2].scatter(df_sc['Pressure'], df_sc['BodyTemperature'], alpha=0.1, s=2, color='seagreen')
-    axes[2].set_xlabel('Atmosferický tlak [hPa]')    # Popis osi x
-    axes[2].set_ylabel('Teplota senzora [°C]')       # Popis osi y
-    axes[2].set_title('Teplota senzora vs Tlak')     # Nadpis
-    axes[2].grid(True, alpha=0.3)                    # Mriežka
+        ('Pressure',        'FanSpeed'),        # 7. Atmosf. tlak vs Rýchlosť ventilátora
+        ('Pressure',        'PressureTemp'),    # 8. Atmosf. tlak vs Teplota tlakomera
+        ('FanSpeed',        'PressureTemp'),    # 9. Rýchlosť ventilátora vs Teplota tlakomera
+
+        ('BodyTemperature', 'PressureTemp'),    # 10. Teplota senzora vs Teplota tlakomera
+        ('BodyTemperature', 'HumidityTemp'),    # 11. Teplota senzora vs Teplota vlhkomera
+        ('PressureTemp',    'HumidityTemp'),    # 12. Teplota tlakomera vs Teplota vlhkomera
+    ]
+
+    top_pary = [(abs(kor_matica.loc[p1, p2]), p1, p2) for p1, p2 in PEVNE_PARY]
+
+    print(f"\n  Vybrané páry pre scatter ploty ({len(top_pary)} celkovo):")
+    for r_val, p1, p2 in top_pary:
+        smer = "pozitívna" if kor_matica.loc[p1, p2] > 0 else "negatívna"
+        print(f"    {p1} vs {p2}: r = {kor_matica.loc[p1, p2]:+.4f}  ({smer})")
+
+    # Kreslenie scatter plotov – mriežka 3×3 (alebo menej ak párov nie je dosť)
+    n = len(top_pary)
+    ncols = 3
+    nrows = (n + ncols - 1) // ncols   # Zaokrúhlenie nahor
+    paleta = ['darkorange', 'crimson', 'seagreen', 'steelblue',
+              'mediumpurple', 'saddlebrown', 'teal', 'tomato', 'slategray',
+              'goldenrod', 'indianred', 'cadetblue']
+    fig, axes = plt.subplots(nrows, ncols, figsize=(18, 5 * nrows))
+    axes = axes.flatten()   # Sploštíme na 1D zoznam pre jednoduchú iteráciu
+
+    for ax, (r_val, p1, p2), farba in zip(axes, top_pary, paleta):
+        df_sc = df[[p1, p2]].dropna()                          # Vyberieme len tieto dva stĺpce, bez NaN
+        ax.scatter(df_sc[p2], df_sc[p1],
+                   alpha=0.1, s=2, color=farba)                # Bodový graf (malé body, priesvitné)
+        ax.set_xlabel(NAZVY_SK.get(p2, p2))                    # Slovenský popis osi x
+        ax.set_ylabel(NAZVY_SK.get(p1, p1))                    # Slovenský popis osi y
+        r_sign = kor_matica.loc[p1, p2]
+        nazov1 = NAZVY_SK.get(p1, p1).split(' [')[0]          # Názov bez jednotky pre nadpis
+        nazov2 = NAZVY_SK.get(p2, p2).split(' [')[0]
+        ax.set_title(f'{nazov1}\nvs {nazov2}\nr = {r_sign:+.3f}')   # Nadpis s hodnotou r
+        ax.grid(True, alpha=0.3)                               # Mriežka
+
+    # Skryjeme prázdne subploty ak párov je menej ako 9
+    for ax in axes[n:]:
+        ax.set_visible(False)
 
     plt.tight_layout()   # Prispôsobenie okrajov
     plt.savefig(os.path.join(output_dir, 'scatter_korelacie.png'), dpi=150)   # Uloženie

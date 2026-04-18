@@ -11,7 +11,8 @@ from nacitanie_dat     import nacitaj_data                          # Načítani
 from analyza_chyb      import (analyza_chybajucich_dni,             # Analýza chýbajúcich dní
                                 analyza_chybajucich_vzoriek,         # Analýza NaN hodnôt
                                 detekcia_poskodennych_vzoriek,       # Detekcia poškodených vzoriek
-                                histogramy_dlzok_chyb)               # Histogramy dĺžok skupín chýb
+                                histogramy_dlzok_chyb,               # Histogramy dĺžok skupín chýb
+                                vycisti_a_uloz)                      # Čistenie dát → cleaned.csv
 from analyza_ziarenia  import rocna_analyza_ziarenia                # Ročná analýza žiarenia
 from analyza_ziarenia  import denna_analyza_pre_mesiace             # Denné profily pre každý mesiac
 from analyza_korelacie import suhrne_statistiky                     # Súhrnné štatistiky parametrov
@@ -23,9 +24,11 @@ from generuj_html      import generuj_html_report                   # Generovani
 # NASTAVENIA – stačí zmeniť tieto premenné
 # ==============================================================
 
-CSV    = 'meteo_data/train/meteo_data_raw.csv'   # Vstupný súbor s meteorologickými dátami
-OUTPUT = 'output_analyza_train_raw'              # Adresár, kam sa uložia výstupy
+#CSV    = 'output_analyza_train_raw/cleaned.csv'   # Vstupný súbor s meteorologickými dátami
+#OUTPUT = 'output_cleaned'                         # Adresár, kam sa uložia výstupy
 
+CSV    = 'meteo_data/test/meteo_data_raw.csv'   # Vstupný súbor s meteorologickými dátami
+OUTPUT = 'output_analyza_test_raw'              # Adresár, kam sa uložia výstupy
 
 # ==============================================================
 # SPUSTENIE ANALÝZY
@@ -45,6 +48,9 @@ analyza_chybajucich_dni(df, OUTPUT)                          # Nájdeme dni bez 
 analyza_chybajucich_vzoriek(df)                              # Spočítame NaN hodnoty v každom stĺpci
 poskodene_maska, _ = detekcia_poskodennych_vzoriek(df)       # Detekujeme hodnoty mimo fyzikálnych medzi
 histogramy_dlzok_chyb(df, poskodene_maska, OUTPUT)           # Histogramy dĺžok skupín chýb
+
+# ---- 3b. Čistenie dát ----
+df_clean = vycisti_a_uloz(df, OUTPUT)   # Odstráni chybné riadky a uloží cleaned.csv do OUTPUT adresára
 
 # ---- 4. Analýza žiarenia ----
 rocna_analyza_ziarenia(df, OUTPUT)       # Ročný priebeh žiarenia s disperziou
